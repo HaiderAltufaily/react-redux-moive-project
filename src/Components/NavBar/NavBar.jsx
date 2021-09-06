@@ -18,10 +18,15 @@ import React from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as ReachLink } from "react-router-dom";
-import "./NavBar.scss";
 
 import { allGenres } from "../../Redux/Slices/moviesFilterSlice";
 import { SearchIcon } from "@chakra-ui/icons";
+import SignIn from "./SignIn";
+import UserProfile from "./UserProfile";
+import AlertModal from "./Alert";
+import { emptySearchValue } from "../../Redux/Slices/searchSlice";
+// import { signInWithGoogle } from "../../Firebase/googleProvider";
+// import { FaGoogle } from "react-icons/fa";
 const imageUrl = "https://image.tmdb.org/t/p/w500/";
 export default function NavBar() {
   const genresList = useSelector((state) => state.moviesFilter.allGenres.list);
@@ -30,7 +35,7 @@ export default function NavBar() {
   useEffect(() => {
     dispatch(allGenres());
   }, []);
-
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   return (
     <Box
       borderBottom="#dc6208 solid 0.2rem"
@@ -51,14 +56,58 @@ export default function NavBar() {
             TMDB
           </Text>
         </Link>
+        <Menu>
+          <MenuButton
+            bg="transparent"
+            color="white"
+            leftIcon={<SearchIcon />}
+            as={Button}
+            _hover={{ background: "transparent" }}
+            _active={{ background: "transparent" }}
+            outline="none"
+            border="none"
+          >
+            Search
+          </MenuButton>
+          <MenuList p="3" bg="black" w="25rem">
+            <MenuInput />
+            <MenuDivider />
+            {searchResults.slice(0, 4).map((movie) => (
+              <Link
+                to={`/movies/movie/${movie.id}`}
+                as={ReachLink}
+                _hover={{ textDecoration: "none", color: "gray" }}
+                key={movie.id}
+              >
+                <MenuItem
+                  p="0"
+                  my="1"
+                  _hover={{ background: "none", textDecoration: "none" }}
+                >
+                  <Flex
+                    w="100%"
+                    my="2"
+                    onClick={() => dispatch(emptySearchValue())}
+                  >
+                    <Image
+                      boxSize="5rem"
+                      src={`${imageUrl}/${movie.poster_path}`}
+                    />
+                    <Box p="4" w="100%" bg="whiteAlpha.300">
+                      <Text as="h1">{movie.title}</Text>
+                    </Box>
+                  </Flex>{" "}
+                </MenuItem>
+              </Link>
+            ))}
+          </MenuList>
+        </Menu>
 
         <HStack fontSize="lg" spacing="5">
           <Link borderRadius="30px" to="/" as={ReachLink}>
             Home
           </Link>
-          <Link to="/about" as={ReachLink}>
-            About
-          </Link>
+
           <Menu>
             <MenuButton>Movies</MenuButton>
             <MenuList bg="black" h="15rem" overflow="auto" fontSize="md">
@@ -84,68 +133,24 @@ export default function NavBar() {
             Actors
           </Link>
 
-          <Link to="/bookmarks" as={ReachLink}>
-            Bookmarks
-          </Link>
+          {isLoggedIn ? (
+            <Link to="/bookmarks" as={ReachLink}>
+              Bookmarks
+            </Link>
+          ) : (
+            <AlertModal />
+          )}
         </HStack>
-        <Menu>
-          <MenuButton color="black" leftIcon={<SearchIcon />} as={Button}>
-            Search
-          </MenuButton>
-          <MenuList p="3" bg="black" w="25rem">
-            <MenuInput />
-            <MenuDivider />
-            {searchResults.slice(0, 4).map((movie) => (
-              <Link
-                to={`/movies/movie/${movie.id}`}
-                as={ReachLink}
-                _hover={{ textDecoration: "none", color: "gray" }}
-                key={movie.id}
-              >
-                <MenuItem
-                  p="0"
-                  my="1"
-                  _hover={{ background: "none", textDecoration: "none" }}
-                >
-                  <Flex w="100%" my="2">
-                    <Image
-                      boxSize="5rem"
-                      src={`${imageUrl}/${movie.poster_path}`}
-                    />
-                    <Box p="4" w="100%" bg="whiteAlpha.300">
-                      <Text as="h1">{movie.title}</Text>
-                    </Box>
-                  </Flex>{" "}
-                </MenuItem>
-              </Link>
-            ))}
-          </MenuList>
-        </Menu>
+
+        {isLoggedIn && (
+          <HStack>
+            {" "}
+            <UserProfile />
+            <SignIn />
+          </HStack>
+        )}
+        {!isLoggedIn && <SignIn />}
       </Flex>
-      {/* This is The Header Component it should contain navigation, Login, Search
-      <ul>
-        <li>Include a Home button that moves the user to the home page.</li>
-        <li>
-          Include a Genre button that display a dropdown list of all movies
-          genre.
-        </li>
-        <li>Include a Actor button that moves the user to the Actors Page.</li>
-        <li>Include an About page that describes the website.</li>
-        <li>
-          Include a Bookmarked button that displays the movies user wanted to
-          bookmark
-        </li>
-        <li>
-          Include Sign In button that displays a modal for the user to Sign in
-          using Google. Once the use is logged in display their name and avatar.
-        </li>
-        <br />
-        only show in home:
-        <li>
-          In Home page show a filter based on popular, release date, top rated,
-          now playing, and upcoming
-        </li>
-      </ul> */}
     </Box>
   );
 }
