@@ -3,10 +3,10 @@ import axios from "axios";
 // https://api.themoviedb.org/3/search/multi?api_key=e8fe6c13def75cda44726ea251c4fb8c&language=en-US&query=super&page=1&include_adult=false
 export const getSearchResult = createAsyncThunk(
   "search/getSearchResult",
-  async (searchValue) => {
+  async ({ searchValue, language }) => {
     return axios
       .get(
-        `https://api.themoviedb.org/3/search/movie?api_key=e8fe6c13def75cda44726ea251c4fb8c&language=en-US&query=${searchValue}&page=1&include_adult=false`
+        `https://api.themoviedb.org/3/search/movie?api_key=e8fe6c13def75cda44726ea251c4fb8c&language=${language}&query=${searchValue}&page=1&include_adult=false`
       )
       .then((response) => {
         return response.data;

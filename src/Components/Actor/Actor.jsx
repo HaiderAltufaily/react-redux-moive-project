@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import "./Actor.scss";
-import { getActors } from "../../Redux/Slices/actorsSlice";
+
+import { getActors, resetActors } from "../../Redux/Slices/actorsSlice";
+import { useBottomScrollListener } from "react-bottom-scroll-listener";
 import {
   Flex,
   Box,
@@ -13,16 +14,41 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { Link as ReachLink } from "react-router-dom";
+import { useState } from "react";
 
-const imageUrl = "https://image.tmdb.org/t/p/w500/";
+const imageUrl = "https://image.tmdb.org/t/p/w500";
 export default function Actor() {
+  const [page, setPage] = useState(1);
+  const [bottom, setBottom] = useState(false);
   const actors = useSelector((state) => state.actors.actors.list);
 
   const actorsStatus = useSelector((state) => state.actors.actors.status);
   const dispatch = useDispatch();
+
+  useBottomScrollListener(() => setBottom(true));
+
   useEffect(() => {
-    dispatch(getActors());
+    dispatch(resetActors());
   }, []);
+  useEffect(() => {
+    dispatch(getActors(page));
+  }, [page]);
+
+  useEffect(() => {
+    let changePage;
+    let time;
+    if (bottom === true) {
+      changePage = setTimeout(() => setPage(page + 1), 500);
+      time = setTimeout(() => {
+        setBottom(false);
+      }, 2000);
+    }
+    return () => {
+      changePage && clearTimeout(changePage);
+      time && clearTimeout(time);
+    };
+  }, [bottom]);
+
   if (actorsStatus !== "success")
     return (
       <Stack align="center" justify="center" bg="black" h="100vh">
@@ -56,12 +82,14 @@ export default function Actor() {
             w="15rem"
             minH="100%"
           >
-            <Image
-              objectFit="fill"
-              boxSize="15rem"
-              fallback={<Skeleton h="100%"></Skeleton>}
-              src={`${imageUrl}/${actor.profile_path}`}
-            />{" "}
+            {actor.profile_path && (
+              <Image
+                objectFit="fill"
+                boxSize="15rem"
+                fallback={<Skeleton boxSize="15rem"></Skeleton>}
+                src={`${imageUrl}/${actor.profile_path}`}
+              />
+            )}
             <Box py="3" textAlign="center">
               <Text fontWeight="bold" fontSize="lg" as="h2">
                 {" "}

@@ -3,31 +3,47 @@ import axios from "axios";
 
 export const moviesByGenre = createAsyncThunk(
   "filter/moviesByGenre",
-  async (genreId) => {
+  // &with_original_language=${language}
+  async ({ genreId, language }) => {
     return axios
       .get(
-        `https://api.themoviedb.org/3/discover/movie?api_key=e8fe6c13def75cda44726ea251c4fb8c&5D&with_genres=${genreId}`
+        `https://api.themoviedb.org/3/discover/movie?api_key=e8fe6c13def75cda44726ea251c4fb8c&5D&with_genres=${genreId}&language=${language}`
       )
       .then((response) => {
         return response.data;
       });
   }
 );
-export const allGenres = createAsyncThunk("filter/allGenres", async () => {
-  return axios
-    .get(
-      "https://api.themoviedb.org/3/genre/movie/list?api_key=e8fe6c13def75cda44726ea251c4fb8c&5D&language=en-US"
-    )
-    .then((response) => {
-      return response.data;
-    });
-});
-export const similarMovies = createAsyncThunk(
-  "filter/similarMovies",
-  async (movieId) => {
+export const loadMoviesPages = createAsyncThunk(
+  "filter/loadMoviesPages",
+  async ({ genreId, page = 1, language }) => {
     return axios
       .get(
-        ` https://api.themoviedb.org/3/movie/${movieId}/similar?api_key=e8fe6c13def75cda44726ea251c4fb8c&5D&language=en-US&page=1`
+        `https://api.themoviedb.org/3/discover/movie?api_key=e8fe6c13def75cda44726ea251c4fb8c&5D&with_genres=${genreId}&page=${page}&language=${language}`
+      )
+      .then((response) => {
+        return response.data;
+      });
+  }
+);
+export const allGenres = createAsyncThunk(
+  "filter/allGenres",
+  async (language) => {
+    return axios
+      .get(
+        ` https://api.themoviedb.org/3/genre/movie/list?api_key=e8fe6c13def75cda44726ea251c4fb8c&5D&language=${language}`
+      )
+      .then((response) => {
+        return response.data;
+      });
+  }
+);
+export const similarMovies = createAsyncThunk(
+  "filter/similarMovies",
+  async ({ movieId, language }) => {
+    return axios
+      .get(
+        ` https://api.themoviedb.org/3/movie/${movieId}/similar?api_key=e8fe6c13def75cda44726ea251c4fb8c&5D&language=${language}&page=1`
       )
       .then((response) => {
         return response.data;
@@ -51,6 +67,19 @@ const moviesFilter = createSlice({
       state.moviesByGenre.list = action.payload.results;
     },
     [moviesByGenre.rejected]: (state) => {
+      state.moviesByGenre.status = "error";
+    },
+    [loadMoviesPages.pending]: (state) => {
+      state.moviesByGenre.status = "loading";
+    },
+    [loadMoviesPages.fulfilled]: (state, action) => {
+      state.moviesByGenre.status = "success";
+      state.moviesByGenre.list = [
+        ...state.moviesByGenre.list,
+        ...action.payload.results,
+      ];
+    },
+    [loadMoviesPages.rejected]: (state) => {
       state.moviesByGenre.status = "error";
     },
     [allGenres.pending]: (state) => {

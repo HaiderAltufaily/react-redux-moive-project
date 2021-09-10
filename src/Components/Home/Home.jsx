@@ -13,6 +13,7 @@ import {
   LinkBox,
   Stack,
   Spinner,
+  Skeleton,
 } from "@chakra-ui/react";
 import { Link as ReachLink } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -24,8 +25,14 @@ import {
 import { FaImdb } from "react-icons/fa";
 
 import Bookmark from "../../Utilities/Bookmark";
+import { useTranslation } from "react-i18next";
+import Cookies from "js-cookie";
+
 const imageUrl = "https://image.tmdb.org/t/p/w500/";
 export default function Home() {
+  const language = Cookies.get("i18next");
+  const { t } = useTranslation();
+
   const [movieNum, setMovieNum] = useState({
     first: 0,
     second: 5,
@@ -65,8 +72,8 @@ export default function Home() {
     return { ...movie, genre_ids: newIds };
   });
   useEffect(() => {
-    if (popularMovies.length === 0) dispatch(getPopularMovies());
-    if (trendingMovies.length === 0) dispatch(getTrendingMovies());
+    dispatch(getPopularMovies(language));
+    dispatch(getTrendingMovies(language));
     setMovieNum({
       first: 0,
       second: 5,
@@ -75,7 +82,7 @@ export default function Home() {
       first: 0,
       second: 5,
     });
-  }, []);
+  }, [language]);
   if (trendingMoviesStatus !== "success" || popularMoviesStatus !== "success")
     return (
       <Stack align="center" justify="center" bg="black" h="100vh">
@@ -93,12 +100,12 @@ export default function Home() {
         fontWeight="bold"
         fontSize="4xl"
       >
-        Popular Movies
+        {t("popular")}
       </Text>
       <Flex py="3" justify="space-evenly">
         <IconButton
           alignSelf="center"
-          icon={<ArrowLeftIcon />}
+          icon={language === "ar" ? <ArrowRightIcon /> : <ArrowLeftIcon />}
           mr="3"
           onClick={() => {
             if (movieNum.first !== 0)
@@ -135,6 +142,7 @@ export default function Home() {
                 <Image
                   objectFit="fill"
                   boxSize="15rem"
+                  fallback={<Skeleton boxSize="15rem"></Skeleton>}
                   src={`${imageUrl}/${movie.poster_path}`}
                 />{" "}
                 <Text
@@ -170,7 +178,7 @@ export default function Home() {
           ))}
         <IconButton
           alignSelf="center"
-          icon={<ArrowRightIcon />}
+          icon={language === "ar" ? <ArrowLeftIcon /> : <ArrowRightIcon />}
           onClick={() => {
             if (popularMovies.length > movieNum.second)
               setMovieNum((prevNum) => {
@@ -191,12 +199,12 @@ export default function Home() {
         fontWeight="bold"
         fontSize="4xl"
       >
-        Trending Movies
+        {t("trending")}
       </Text>
       <Flex py="3" justify="space-evenly">
         <IconButton
           alignSelf="center"
-          icon={<ArrowLeftIcon />}
+          icon={language === "ar" ? <ArrowRightIcon /> : <ArrowLeftIcon />}
           mr="3"
           onClick={() => {
             if (trendingNum.first !== 0)
@@ -233,6 +241,7 @@ export default function Home() {
                   objectFit="fill"
                   boxSize="15rem"
                   src={`${imageUrl}/${movie.poster_path}`}
+                  fallback={<Skeleton boxSize="15rem"></Skeleton>}
                 />{" "}
                 <Text
                   textAlign="center"
@@ -265,7 +274,7 @@ export default function Home() {
           ))}
         <IconButton
           alignSelf="center"
-          icon={<ArrowRightIcon />}
+          icon={language === "ar" ? <ArrowLeftIcon /> : <ArrowRightIcon />}
           onClick={() => {
             if (trendingMovies.length > trendingNum.second)
               setTrendingNum((prevNum) => {

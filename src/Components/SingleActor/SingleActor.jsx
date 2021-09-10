@@ -7,6 +7,7 @@ import {
   Spinner,
   IconButton,
   LinkBox,
+  Skeleton,
 } from "@chakra-ui/react";
 import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
 import { Link as ReachLink } from "react-router-dom";
@@ -16,10 +17,16 @@ import { useParams } from "react-router";
 import {
   getActorDetails,
   getActorMovies,
+  getEnglishActor,
 } from "../../Redux/Slices/actorsSlice";
+import Cookies from "js-cookie";
+import { useTranslation } from "react-i18next";
 
 const imageUrl = "https://image.tmdb.org/t/p/w500/";
 export default function SingleActor() {
+  const { t } = useTranslation();
+  const language = Cookies.get("i18next");
+
   const [movieNum, setMovieNum] = useState({
     first: 0,
     second: 5,
@@ -32,10 +39,12 @@ export default function SingleActor() {
   const actorMoviesStatus = useSelector(
     (state) => state.actors.actorMovies.status
   );
+  const englishActor = useSelector((state) => state.actors.englishActor.list);
 
   useEffect(() => {
-    dispatch(getActorDetails(actorId));
-    dispatch(getActorMovies(actorId));
+    dispatch(getActorDetails({ actorId, language }));
+    dispatch(getActorMovies({ actorId, language }));
+    dispatch(getEnglishActor({ actorId }));
     setMovieNum({
       first: 0,
       second: 5,
@@ -55,6 +64,7 @@ export default function SingleActor() {
         <Image
           borderRadius="10px"
           h="lg"
+          fallback={<Skeleton boxSize="lg"></Skeleton>}
           src={`${imageUrl}/${actor.profile_path}`}
         />
         <Flex
@@ -69,33 +79,53 @@ export default function SingleActor() {
           boxShadow="lg"
         >
           <Stack borderBottom="#dc6208 solid 0.2rem">
-            <Text fontWeight="bold" fontSize="4xl" flexBasis="20%">
+            <Text
+              textAlign={"left"}
+              fontWeight="bold"
+              fontSize="4xl"
+              flexBasis="20%"
+            >
               {actor.name}
             </Text>
             <Flex justify="space-between">
               <Text fontSize="lg" color="gray.200">
                 {" "}
-                Birthday: {actor.birthday}{" "}
+                {t("birthday")}: {actor.birthday}{" "}
               </Text>{" "}
-              <Text> Popularity: {actor.popularity} </Text>
+              <Text>
+                {" "}
+                {t("popularity")}: {actor.popularity}{" "}
+              </Text>
               {actor.deathday && (
                 <Text fontSize="lg" color="gray.200">
-                  DeathDay: {actor.deathday}
+                  {t("deathDay")}: {actor.deathday}
                 </Text>
               )}
             </Flex>
           </Stack>
           <Stack overflow="hidden" justify="space-evenly" flexBasis="80%">
-            <Text p="5" fontWeight="semibold" fontSize="lg" color="white">
-              {actor.biography !== "" && actor.biography?.slice(0, 1000)}
+            <Text
+              textAlign={
+                actor.biography && language === "ar" ? "right" : "left"
+              }
+              p="5"
+              fontWeight="semibold"
+              fontSize="lg"
+              color="white"
+            >
+              {actor.biography
+                ? actor.biography?.slice(0, 1000) + "..."
+                : englishActor.biography?.slice(0, 1000) + "..."}
             </Text>{" "}
           </Stack>
         </Flex>
+
         {actorMovies.cast && (
           <Image
             borderRadius="10px"
             ml="5"
             h="lg"
+            fallback={<Skeleton boxSize="lg"></Skeleton>}
             src={`${imageUrl}/${actorMovies?.cast[0]?.poster_path}`}
           />
         )}
@@ -103,19 +133,18 @@ export default function SingleActor() {
       <Text
         color="whiteAlpha.900"
         my="5"
-        textAlign="left"
         ml="8"
         fontWeight="semibold"
         fontSize="4xl"
         letterSpacing="1px"
       >
-        Movies
+        {t("movies")}
       </Text>
       <Flex mt="5" justify="space-evenly" bg="black">
         <IconButton
           alignSelf="center"
           mr="3"
-          icon={<ArrowLeftIcon />}
+          icon={language === "ar" ? <ArrowRightIcon /> : <ArrowLeftIcon />}
           onClick={() => {
             if (movieNum.first !== 0)
               setMovieNum((prevNum) => {
@@ -150,6 +179,7 @@ export default function SingleActor() {
                       boxSize="15rem"
                       src={`${imageUrl}/${movie.poster_path}`}
                       borderRadius="5px"
+                      fallback={<Skeleton boxSize="15rem"></Skeleton>}
                     />{" "}
                     <Stack minH="3rem" justify="center" align="center">
                       <Text fontSize="lg" textAlign="center">
@@ -163,7 +193,7 @@ export default function SingleActor() {
             })}{" "}
         <IconButton
           alignSelf="center"
-          icon={<ArrowRightIcon />}
+          icon={language === "ar" ? <ArrowLeftIcon /> : <ArrowRightIcon />}
           onClick={() => {
             if (actorMovies.cast.length >= movieNum.second)
               setMovieNum((prevNum) => {

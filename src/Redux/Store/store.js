@@ -5,6 +5,7 @@ import moviesFilterSlice from "../Slices/moviesFilterSlice";
 import searchSlice from "../Slices/searchSlice";
 import authSlice from "../Slices/authSlice";
 import bookmarksSlice from "../Slices/bookmarksSlice";
+import translationSlice from "../Slices/translationSlice";
 const store = configureStore({
   reducer: {
     movies: movies,
@@ -13,6 +14,7 @@ const store = configureStore({
     search: searchSlice,
     auth: authSlice,
     bookmarks: bookmarksSlice,
+    translation: translationSlice,
   },
 });
 export default store;
