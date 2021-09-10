@@ -11,6 +11,6 @@ export const signInWithGoogle = async (dispatch) => {
     const token = await response.user.getIdToken();
     dispatch(loginHandler(token));
   } catch (err) {
-    console.log(err);
+    err.message;
   }
 };
