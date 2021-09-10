@@ -13,6 +13,18 @@ export const moviesByGenre = createAsyncThunk(
       });
   }
 );
+export const loadMoviesPages = createAsyncThunk(
+  "filter/loadMoviesPages",
+  async ({ genreId, page = 1 }) => {
+    return axios
+      .get(
+        `https://api.themoviedb.org/3/discover/movie?api_key=e8fe6c13def75cda44726ea251c4fb8c&5D&with_genres=${genreId}&page=${page}`
+      )
+      .then((response) => {
+        return response.data;
+      });
+  }
+);
 export const allGenres = createAsyncThunk("filter/allGenres", async () => {
   return axios
     .get(
@@ -51,6 +63,19 @@ const moviesFilter = createSlice({
       state.moviesByGenre.list = action.payload.results;
     },
     [moviesByGenre.rejected]: (state) => {
+      state.moviesByGenre.status = "error";
+    },
+    [loadMoviesPages.pending]: (state) => {
+      state.moviesByGenre.status = "loading";
+    },
+    [loadMoviesPages.fulfilled]: (state, action) => {
+      state.moviesByGenre.status = "success";
+      state.moviesByGenre.list = [
+        ...state.moviesByGenre.list,
+        ...action.payload.results,
+      ];
+    },
+    [loadMoviesPages.rejected]: (state) => {
       state.moviesByGenre.status = "error";
     },
     [allGenres.pending]: (state) => {

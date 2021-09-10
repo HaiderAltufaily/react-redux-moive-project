@@ -16,27 +16,59 @@ import React from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { moviesByGenre } from "../../Redux/Slices/moviesFilterSlice";
+import {
+  loadMoviesPages,
+  moviesByGenre,
+} from "../../Redux/Slices/moviesFilterSlice";
 
 import { FaImdb } from "react-icons/fa";
 import { Link as ReachLink } from "react-router-dom";
 import Bookmark from "../../Utilities/Bookmark";
+import { useBottomScrollListener } from "react-bottom-scroll-listener";
+import { useState } from "react";
+
 const imageUrl = "https://image.tmdb.org/t/p/w500/";
 export default function Movies() {
   const { genreId } = useParams();
+  const [bottom, setBottom] = useState(false);
+  const [page, setPage] = useState(1);
   const genres = useSelector((state) => state.moviesFilter.allGenres.list);
   const movies = useSelector((state) => state.moviesFilter.moviesByGenre.list);
   const moviesStatus = useSelector(
     (state) => state.moviesFilter.moviesByGenre.status
   );
+
   const dispatch = useDispatch();
+  // eslint-disable-next-line
+
+  useBottomScrollListener(() => setBottom(true));
+
+  useEffect(() => {
+    let changePage;
+    let time;
+    if (bottom === true) {
+      changePage = setTimeout(() => setPage(page + 1), 500);
+      time = setTimeout(() => {
+        setBottom(false);
+      }, 2000);
+    }
+    return () => {
+      changePage && clearTimeout(changePage);
+      time && clearTimeout(time);
+    };
+  }, [bottom]);
+
   useEffect(() => {
     dispatch(moviesByGenre(genreId));
+    setPage(1);
   }, [genreId]);
+  useEffect(() => {
+    if (page > 1) dispatch(loadMoviesPages({ genreId, page: page }));
+  }, [page]);
 
   // get genre names instead of id's
 
-  const newMovies = movies?.map((movie) => {
+  const newMovies = movies.map((movie) => {
     const newIds = movie.genre_ids?.map((id) => {
       const genre = genres?.find((genre) => {
         return genre?.id === id;

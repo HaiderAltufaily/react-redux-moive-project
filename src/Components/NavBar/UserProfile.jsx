@@ -38,11 +38,12 @@ function UserProfile() {
   }
 
   useEffect(() => {
-    fetch(photo)
-      .then((res) => setURL(res.url))
-      .catch((err) => {
-        err;
-      });
+    if (photo)
+      fetch(photo)
+        .then((res) => setURL(res.url))
+        .catch((err) => {
+          err;
+        });
   }, [photo]);
 
   return (

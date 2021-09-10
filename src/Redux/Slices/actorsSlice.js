@@ -1,15 +1,18 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-export const getActors = createAsyncThunk("actors/getActors", async () => {
-  return axios
-    .get(
-      "https://api.themoviedb.org/3/person/popular?api_key=e8fe6c13def75cda44726ea251c4fb8c&language=en-US&page=1"
-    )
-    .then((response) => {
-      return response.data;
-    });
-});
+export const getActors = createAsyncThunk(
+  "actors/getActors",
+  async (page = 1) => {
+    return axios
+      .get(
+        `https://api.themoviedb.org/3/person/popular?api_key=e8fe6c13def75cda44726ea251c4fb8c&language=en-US&page=${page}`
+      )
+      .then((response) => {
+        return response.data;
+      });
+  }
+);
 export const getActorDetails = createAsyncThunk(
   "actors/actorDetails",
   async (id) => {
@@ -52,13 +55,18 @@ const actorsSlice = createSlice({
       list: [],
     },
   },
+  reducers: {
+    resetActors(state) {
+      state.actors.list = [];
+    },
+  },
   extraReducers: {
     [getActors.pending]: (state) => {
       state.actors.status = "loading";
     },
     [getActors.fulfilled]: (state, action) => {
       state.actors.status = "success";
-      state.actors.list = action.payload.results;
+      state.actors.list = [...state.actors.list, ...action.payload.results];
     },
     [getActors.rejected]: (state) => {
       state.actors.status = "error";
@@ -85,4 +93,5 @@ const actorsSlice = createSlice({
     },
   },
 });
+export const { resetActors } = actorsSlice.actions;
 export default actorsSlice.reducer;
