@@ -6,10 +6,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { signInWithGoogle } from "../../Firebase/googleProvider";
 import { logoutHandler } from "../../Redux/Slices/authSlice";
 import { resetBookmarks } from "../../Redux/Slices/bookmarksSlice";
+import { useTranslation } from "react-i18next";
+import { BiLogOut } from "react-icons/bi";
+import Cookies from "js-cookie";
 
 function SignIn() {
+  const language = Cookies.get("i18next");
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   function handleSignOut() {
@@ -22,18 +26,18 @@ function SignIn() {
       onClick={() => signInWithGoogle(dispatch)}
       leftIcon={<FaGoogle />}
     >
-      Sign In
+      {t("sign_in")}
     </Button>
   ) : (
     <Box>
       <Button
         onClick={handleSignOut}
         colorScheme="white"
-        rightIcon={<FiLogOut />}
+        rightIcon={language === "ar" ? <BiLogOut size="20" /> : <FiLogOut />}
         fontWeight="semibold"
         fontSize="sm"
       >
-        Sign Out
+        {t("sign_out")}
       </Button>
     </Box>
   );

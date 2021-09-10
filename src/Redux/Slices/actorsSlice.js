@@ -15,10 +15,22 @@ export const getActors = createAsyncThunk(
 );
 export const getActorDetails = createAsyncThunk(
   "actors/actorDetails",
-  async (id) => {
+  async ({ actorId, language }) => {
     return axios
       .get(
-        ` https://api.themoviedb.org/3/person/${id}?api_key=e8fe6c13def75cda44726ea251c4fb8c&language=en-US`
+        ` https://api.themoviedb.org/3/person/${actorId}?api_key=e8fe6c13def75cda44726ea251c4fb8c&language=${language}`
+      )
+      .then((response) => {
+        return response.data;
+      });
+  }
+);
+export const getEnglishActor = createAsyncThunk(
+  "actors/getEnglishActor",
+  async ({ actorId }) => {
+    return axios
+      .get(
+        ` https://api.themoviedb.org/3/person/${actorId}?api_key=e8fe6c13def75cda44726ea251c4fb8c&language=en`
       )
       .then((response) => {
         return response.data;
@@ -28,10 +40,10 @@ export const getActorDetails = createAsyncThunk(
 
 export const getActorMovies = createAsyncThunk(
   "actors/actorMovies",
-  async (id) => {
+  async ({ actorId, language }) => {
     return axios
       .get(
-        ` https://api.themoviedb.org/3/person/${id}/movie_credits?api_key=e8fe6c13def75cda44726ea251c4fb8c&language=en-US`
+        ` https://api.themoviedb.org/3/person/${actorId}/movie_credits?api_key=e8fe6c13def75cda44726ea251c4fb8c&language=${language}`
       )
       .then((response) => {
         return response.data;
@@ -51,6 +63,10 @@ const actorsSlice = createSlice({
       list: [],
     },
     actorMovies: {
+      status: "",
+      list: [],
+    },
+    englishActor: {
       status: "",
       list: [],
     },
@@ -90,6 +106,16 @@ const actorsSlice = createSlice({
     },
     [getActorMovies.rejected]: (state) => {
       state.actorMovies.status = "error";
+    },
+    [getEnglishActor.pending]: (state) => {
+      state.englishActor.status = "loading";
+    },
+    [getEnglishActor.fulfilled]: (state, action) => {
+      state.englishActor.status = "success";
+      state.englishActor.list = action.payload;
+    },
+    [getEnglishActor.rejected]: (state) => {
+      state.englishActor.status = "error";
     },
   },
 });

@@ -6,13 +6,17 @@ import {
   getSearchResult,
   setSearchValue,
 } from "../../Redux/Slices/searchSlice";
-
+import { useTranslation } from "react-i18next";
+import Cookies from "js-cookie";
+const language = Cookies.get("i18next");
 const navigationKeys = ["ArrowUp", "ArrowDown", "Escape"];
 
 const MenuInput = (props) => {
+  const { t } = useTranslation();
   const searchValue = useSelector((state) => state.search.searchValue);
   useEffect(() => {
-    if (searchValue !== "") dispatch(getSearchResult(searchValue));
+    if (searchValue !== "")
+      dispatch(getSearchResult({ searchValue, language }));
     else dispatch(emptySearchResults());
   }, [searchValue]);
 
@@ -22,7 +26,7 @@ const MenuInput = (props) => {
   return (
     <Box px="3" role={role}>
       <Input
-        placeholder="Search Movies"
+        placeholder={t("search_movies")}
         color="white"
         bg="whiteAlpha.300"
         value={searchValue}

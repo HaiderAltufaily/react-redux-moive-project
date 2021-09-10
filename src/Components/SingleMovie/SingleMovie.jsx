@@ -15,7 +15,11 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { similarMovies } from "../../Redux/Slices/moviesFilterSlice";
-import { movieActors, movieDetails } from "../../Redux/Slices/moviesSlice";
+import {
+  movieActors,
+  movieDetails,
+  movieInEnglish,
+} from "../../Redux/Slices/moviesSlice";
 import { Link as ReachLink } from "react-router-dom";
 import { useState } from "react";
 import {
@@ -24,9 +28,12 @@ import {
   ExternalLinkIcon,
 } from "@chakra-ui/icons";
 import Bookmark from "../../Utilities/Bookmark";
+import { useTranslation } from "react-i18next";
+import Cookies from "js-cookie";
 
 const imageUrl = "https://image.tmdb.org/t/p/w500/";
 export default function SingleMovie() {
+  const language = Cookies.get("i18next");
   const [actorNum, setActorNum] = useState({ first: 0, second: 5 });
   const [movieNum, setMovieNum] = useState({ first: 0, second: 5 });
   const { movieId } = useParams();
@@ -40,13 +47,15 @@ export default function SingleMovie() {
   );
   const actorsStatus = useSelector((state) => state.movies.movieActors.status);
   const movieStatus = useSelector((state) => state.movies.movieDetails.status);
+  const englishMovie = useSelector((state) => state.movies.movieInEnglish.list);
 
   const actors = useSelector((state) => state.movies.movieActors.list);
-
+  const { t } = useTranslation();
   useEffect(() => {
-    dispatch(movieDetails(movieId));
-    dispatch(similarMovies(movieId));
-    dispatch(movieActors(movieId));
+    dispatch(similarMovies({ movieId, language }));
+    dispatch(movieActors({ movieId, language }));
+    dispatch(movieDetails({ movieId, language }));
+    dispatch(movieInEnglish({ movieId }));
     setActorNum({
       first: 0,
       second: 5,
@@ -87,10 +96,16 @@ export default function SingleMovie() {
             h="lg"
             boxShadow="lg"
             position="relative"
+            mr="2"
           >
             <Bookmark movie={movie} size={39} top="0" />
             <Stack borderBottom="#dc6208 solid 0.2rem">
-              <Text fontWeight="bold" fontSize="4xl" flexBasis="20%">
+              <Text
+                textAlign="left"
+                fontWeight="bold"
+                fontSize="4xl"
+                flexBasis="20%"
+              >
                 {movie.original_title}
               </Text>
               <Flex justify="space-between">
@@ -104,7 +119,7 @@ export default function SingleMovie() {
                 <HStack>
                   <Text fontSize="lg" fontWeight="semibold">
                     {" "}
-                    Directed By:{" "}
+                    {t("directed_by")}
                   </Text>
                   {actors.crew.slice(0, 1).map((crew) => (
                     <Text
@@ -120,9 +135,13 @@ export default function SingleMovie() {
                 </HStack>
               </Flex>
             </Stack>
-            <Stack justify="space-evenly" flexBasis="80%">
+            <Stack
+              textAlign={language === "ar" && movie.overview ? "right" : "left"}
+              justify="space-evenly"
+              flexBasis="80%"
+            >
               <Text p="5" fontWeight="semibold" fontSize="lg" color="white">
-                {movie.overview}
+                {movie.overview ? movie.overview : englishMovie.overview}
               </Text>
 
               {movie.videos && (
@@ -134,7 +153,7 @@ export default function SingleMovie() {
                   isExternal
                   href={`https://www.youtube.com/watch?v=${movie.videos?.results[0]?.key}`}
                 >
-                  Watch Trailer <ExternalLinkIcon mx="2" />{" "}
+                  {t("trailer")} <ExternalLinkIcon mx="2" />{" "}
                 </Button>
               )}
             </Stack>
@@ -153,20 +172,19 @@ export default function SingleMovie() {
       <Text
         color="whiteAlpha.900"
         my="5"
-        textAlign="left"
         ml="8"
         fontWeight="semibold"
         fontSize="4xl"
         letterSpacing="1px"
       >
-        Actors
+        {t("actors")}
       </Text>
       {actors.cast && (
         <Flex mt="5" justify="space-evenly" bg="black">
           <IconButton
             alignSelf="center"
             mr="3"
-            icon={<ArrowLeftIcon />}
+            icon={language === "ar" ? <ArrowRightIcon /> : <ArrowLeftIcon />}
             onClick={() => {
               if (actorNum.first !== 0)
                 setActorNum((prevNum) => {
@@ -203,7 +221,7 @@ export default function SingleMovie() {
           })}{" "}
           <IconButton
             alignSelf="center"
-            icon={<ArrowRightIcon />}
+            icon={language === "ar" ? <ArrowLeftIcon /> : <ArrowRightIcon />}
             onClick={() => {
               if (actors.cast.length >= actorNum.second)
                 setActorNum((prevNum) => {
@@ -219,19 +237,18 @@ export default function SingleMovie() {
       <Text
         color="whiteAlpha.900"
         my="5"
-        textAlign="left"
         ml="8"
         fontWeight="semibold"
         fontSize="4xl"
         letterSpacing="1px"
       >
-        Similar Movies You May Like
+        {t("similarMovies")}
       </Text>
 
       <Flex mt="5" justify="space-evenly" bg="black">
         <IconButton
           alignSelf="center"
-          icon={<ArrowLeftIcon />}
+          icon={language === "ar" ? <ArrowRightIcon /> : <ArrowLeftIcon />}
           mr="3"
           onClick={() => {
             if (movieNum.first !== 0)
@@ -277,7 +294,7 @@ export default function SingleMovie() {
           })}{" "}
         <IconButton
           alignSelf="center"
-          icon={<ArrowRightIcon />}
+          icon={language === "ar" ? <ArrowLeftIcon /> : <ArrowRightIcon />}
           onClick={() => {
             if (movieNum.second < 20)
               return setMovieNum((prevNum) => {
@@ -289,19 +306,6 @@ export default function SingleMovie() {
           }}
         />
       </Flex>
-      {/* This is Single Movie Components:
-      <div>
-        Display: the poster of the movie and a description. 5 of the actors that
-        played in the movie. a section for related movies, at least 5. the
-        trailer of the movie. the director name. the movie rating and votes
-        count.
-        <br />
-        <br />
-        Functionalities:
-        <br />
-        Tha ability to bookmark the movie. Once you click on an actor you move
-        to their page.
-      </div> */}
     </Box>
   );
 }

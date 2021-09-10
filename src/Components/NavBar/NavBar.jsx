@@ -8,32 +8,33 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  MenuDivider,
-  Image,
-  Button,
   LinkBox,
 } from "@chakra-ui/react";
-import MenuInput from "./MenuInput";
+
 import React from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as ReachLink } from "react-router-dom";
 
 import { allGenres } from "../../Redux/Slices/moviesFilterSlice";
-import { SearchIcon } from "@chakra-ui/icons";
+
 import SignIn from "./SignIn";
 import UserProfile from "./UserProfile";
 import AlertModal from "./Alert";
-import { emptySearchValue } from "../../Redux/Slices/searchSlice";
 
-const imageUrl = "https://image.tmdb.org/t/p/w500/";
+import Languages from "./Languages";
+import Search from "./Search";
+import { useTranslation } from "react-i18next";
+import Cookies from "js-cookie";
+
 export default function NavBar() {
   const genresList = useSelector((state) => state.moviesFilter.allGenres.list);
-  const searchResults = useSelector((state) => state.search.searchResult.list);
+  const language = Cookies.get("i18next");
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(allGenres());
-  }, []);
+    dispatch(allGenres(language));
+  }, [language]);
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   return (
     <Box
@@ -56,61 +57,16 @@ export default function NavBar() {
               TMDB
             </Text>
           </Link>
-          <Menu>
-            <MenuButton
-              bg="transparent"
-              color="white"
-              leftIcon={<SearchIcon />}
-              as={Button}
-              _hover={{ background: "transparent" }}
-              _active={{ background: "transparent" }}
-              outline="none"
-              border="none"
-            >
-              Search
-            </MenuButton>
-            <MenuList p="3" bg="black" w="25rem">
-              <MenuInput />
-              <MenuDivider />
-              {searchResults.slice(0, 4).map((movie) => (
-                <Link
-                  to={`/movies/movie/${movie.id}`}
-                  as={ReachLink}
-                  _hover={{ textDecoration: "none", color: "gray" }}
-                  key={movie.id}
-                >
-                  <MenuItem
-                    p="0"
-                    my="1"
-                    _hover={{ background: "none", textDecoration: "none" }}
-                  >
-                    <Flex
-                      w="100%"
-                      my="2"
-                      onClick={() => dispatch(emptySearchValue())}
-                    >
-                      <Image
-                        boxSize="5rem"
-                        src={`${imageUrl}/${movie.poster_path}`}
-                      />
-                      <Box p="4" w="100%" bg="whiteAlpha.300">
-                        <Text as="h1">{movie.title}</Text>
-                      </Box>
-                    </Flex>{" "}
-                  </MenuItem>
-                </Link>
-              ))}
-            </MenuList>
-          </Menu>
+          <Search />
         </HStack>
 
         <HStack fontSize="lg" spacing="5">
           <Link borderRadius="30px" to="/" as={ReachLink}>
-            Home
+            {t("home")}
           </Link>
 
           <Menu>
-            <MenuButton>Movies</MenuButton>
+            <MenuButton> {t("movies")} </MenuButton>
             <MenuList bg="black" h="15rem" overflow="auto" fontSize="md">
               {genresList.map(
                 (genre) =>
@@ -134,12 +90,12 @@ export default function NavBar() {
             </MenuList>
           </Menu>
           <Link to="/actors" as={ReachLink}>
-            Actors
+            {t("actors")}
           </Link>
 
           {isLoggedIn ? (
             <Link to="/bookmarks" as={ReachLink}>
-              Bookmarks
+              {t("bookmarks")}
             </Link>
           ) : (
             <AlertModal />
@@ -153,7 +109,11 @@ export default function NavBar() {
             <SignIn />
           </HStack>
         )}
+
         {!isLoggedIn && <SignIn />}
+        <Box mr="10">
+          <Languages />
+        </Box>
       </Flex>
     </Box>
   );

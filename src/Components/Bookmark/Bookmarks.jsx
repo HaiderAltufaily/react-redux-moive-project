@@ -12,6 +12,7 @@ import {
   Link,
 } from "@chakra-ui/react";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { FaImdb } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { Link as ReachLink } from "react-router-dom";
@@ -20,6 +21,7 @@ import Bookmark from "../../Utilities/Bookmark";
 const imageUrl = "https://image.tmdb.org/t/p/w500/";
 
 export default function Bookmarks() {
+  const { t } = useTranslation();
   const bookmarkedMovies = useSelector((state) => state.bookmarks.bookmarks);
   if (bookmarkedMovies.length === 0) {
     return (
@@ -31,10 +33,10 @@ export default function Bookmarks() {
         bg="black"
       >
         <Text fontSize="5xl" fontWeight="bold" letterSpacing="1px">
-          Empty!
+          {t("empty")}
         </Text>
         <Link to="/home" as={ReachLink}>
-          Bookmark Some Movies Now!
+          {t("empty_message")}
         </Link>
       </Stack>
     );
