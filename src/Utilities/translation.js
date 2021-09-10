@@ -21,9 +21,10 @@ export const english = {
   empty: "Empty!",
   empty_message: "Bookmark Some Movies Now!",
   sign_out: "Sign Out",
+  add_bookmarks: "Successfully added to the bookmarks",
+  remove_bookmarks: "Successfully removed from the bookmarks",
 };
 export const arabic = {
-  welcome_to_react: "اهلا بك",
   sign_in: "تسجيل الدخول",
   home: "الرئيسية",
   movies: "الأفلام",
@@ -45,4 +46,6 @@ export const arabic = {
   empty: "فارغ!",
   empty_message: "اضف بعض الأفلام الان!",
   sign_out: "تسجيل الخروج",
+  add_bookmarks: "تمت الاضافة الى المفضلة بنجاح",
+  remove_bookmarks: "تم الحذف من المفضلة بنجاح",
 };

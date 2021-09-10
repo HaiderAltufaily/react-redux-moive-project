@@ -28,7 +28,6 @@ function Languages() {
     } else {
       document.body.dir = "ltr";
     }
-    history.push("/");
   }, [language]);
   return (
     <Menu size="sm">
@@ -44,7 +43,13 @@ function Languages() {
       <MenuList>
         {languages.map(({ name, country_code, code }) => (
           <MenuItem
-            onClick={() => i18next.changeLanguage(code)}
+            onClick={() => {
+              i18next.changeLanguage(code);
+              history.push("/");
+            }}
+            cursor={code === language && "auto"}
+            _hover={language === code && { background: "gray.200" }}
+            background={code === language && "gray.200"}
             fontSize="md"
             mb="1"
             textAlign="center"

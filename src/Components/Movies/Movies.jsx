@@ -120,7 +120,7 @@ export default function Movies() {
                   <Image
                     objectFit="fill"
                     boxSize="15rem"
-                    fallback={<Skeleton h="100%"></Skeleton>}
+                    fallback={<Skeleton boxSize="15rem"></Skeleton>}
                     src={`${imageUrl}/${movie.poster_path}`}
                   />
                 )}

@@ -13,6 +13,7 @@ import {
   LinkBox,
   Stack,
   Spinner,
+  Skeleton,
 } from "@chakra-ui/react";
 import { Link as ReachLink } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -141,6 +142,7 @@ export default function Home() {
                 <Image
                   objectFit="fill"
                   boxSize="15rem"
+                  fallback={<Skeleton boxSize="15rem"></Skeleton>}
                   src={`${imageUrl}/${movie.poster_path}`}
                 />{" "}
                 <Text
@@ -202,7 +204,7 @@ export default function Home() {
       <Flex py="3" justify="space-evenly">
         <IconButton
           alignSelf="center"
-          icon={<ArrowLeftIcon />}
+          icon={language === "ar" ? <ArrowRightIcon /> : <ArrowLeftIcon />}
           mr="3"
           onClick={() => {
             if (trendingNum.first !== 0)
@@ -239,6 +241,7 @@ export default function Home() {
                   objectFit="fill"
                   boxSize="15rem"
                   src={`${imageUrl}/${movie.poster_path}`}
+                  fallback={<Skeleton boxSize="15rem"></Skeleton>}
                 />{" "}
                 <Text
                   textAlign="center"
@@ -271,7 +274,7 @@ export default function Home() {
           ))}
         <IconButton
           alignSelf="center"
-          icon={<ArrowRightIcon />}
+          icon={language === "ar" ? <ArrowLeftIcon /> : <ArrowRightIcon />}
           onClick={() => {
             if (trendingMovies.length > trendingNum.second)
               setTrendingNum((prevNum) => {

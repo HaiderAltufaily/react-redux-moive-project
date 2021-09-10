@@ -86,7 +86,7 @@ export default function Actor() {
               <Image
                 objectFit="fill"
                 boxSize="15rem"
-                fallback={<Skeleton h="100%"></Skeleton>}
+                fallback={<Skeleton boxSize="15rem"></Skeleton>}
                 src={`${imageUrl}/${actor.profile_path}`}
               />
             )}

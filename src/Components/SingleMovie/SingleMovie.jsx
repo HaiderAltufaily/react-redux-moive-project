@@ -9,6 +9,7 @@ import {
   Button,
   Spinner,
   HStack,
+  Skeleton,
 } from "@chakra-ui/react";
 import React from "react";
 import { useEffect } from "react";
@@ -82,6 +83,7 @@ export default function SingleMovie() {
           <Image
             borderRadius="10px"
             h="lg"
+            fallback={<Skeleton boxSize="lg"></Skeleton>}
             src={`${imageUrl}/${movie.poster_path}`}
           />
 
@@ -162,6 +164,7 @@ export default function SingleMovie() {
             <Image
               borderRadius="10px"
               ml="5"
+              fallback={<Skeleton boxSize="lg"></Skeleton>}
               h="lg"
               src={`${imageUrl}/${actors.cast[0]?.profile_path}`}
             />
@@ -210,6 +213,7 @@ export default function SingleMovie() {
                     boxSize="15rem"
                     src={`${imageUrl}/${actor.profile_path}`}
                     borderRadius="5px"
+                    fallback={<Skeleton boxSize="15rem"></Skeleton>}
                   />{" "}
                   <Text fontSize="lg" textAlign="center" p="5">
                     {" "}
@@ -283,6 +287,7 @@ export default function SingleMovie() {
                     boxSize="15rem"
                     src={`${imageUrl}/${movie.poster_path}`}
                     borderRadius="5px"
+                    fallback={<Skeleton boxSize="15rem"></Skeleton>}
                   />{" "}
                   <Text fontSize="lg" textAlign="center" p="5">
                     {" "}

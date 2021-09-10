@@ -7,6 +7,7 @@ import {
   Spinner,
   IconButton,
   LinkBox,
+  Skeleton,
 } from "@chakra-ui/react";
 import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
 import { Link as ReachLink } from "react-router-dom";
@@ -63,6 +64,7 @@ export default function SingleActor() {
         <Image
           borderRadius="10px"
           h="lg"
+          fallback={<Skeleton boxSize="lg"></Skeleton>}
           src={`${imageUrl}/${actor.profile_path}`}
         />
         <Flex
@@ -123,6 +125,7 @@ export default function SingleActor() {
             borderRadius="10px"
             ml="5"
             h="lg"
+            fallback={<Skeleton boxSize="lg"></Skeleton>}
             src={`${imageUrl}/${actorMovies?.cast[0]?.poster_path}`}
           />
         )}
@@ -176,6 +179,7 @@ export default function SingleActor() {
                       boxSize="15rem"
                       src={`${imageUrl}/${movie.poster_path}`}
                       borderRadius="5px"
+                      fallback={<Skeleton boxSize="15rem"></Skeleton>}
                     />{" "}
                     <Stack minH="3rem" justify="center" align="center">
                       <Text fontSize="lg" textAlign="center">
