@@ -30,6 +30,9 @@ import Cookies from "js-cookie";
 
 const imageUrl = "https://image.tmdb.org/t/p/w500/";
 export default function Home() {
+  const changeMoviesLanguage = useSelector(
+    (state) => state.translation.changeMoviesLanguage
+  );
   const language = Cookies.get("i18next");
   const { t } = useTranslation();
 
@@ -72,8 +75,8 @@ export default function Home() {
     return { ...movie, genre_ids: newIds };
   });
   useEffect(() => {
-    dispatch(getPopularMovies(language));
-    dispatch(getTrendingMovies(language));
+    dispatch(getPopularMovies({ language, changeMoviesLanguage }));
+    dispatch(getTrendingMovies({ language, changeMoviesLanguage }));
     setMovieNum({
       first: 0,
       second: 5,
@@ -82,7 +85,7 @@ export default function Home() {
       first: 0,
       second: 5,
     });
-  }, [language]);
+  }, [language, changeMoviesLanguage]);
   if (trendingMoviesStatus !== "success" || popularMoviesStatus !== "success")
     return (
       <Stack align="center" justify="center" bg="black" h="100vh">
@@ -102,8 +105,9 @@ export default function Home() {
       >
         {t("popular")}
       </Text>
-      <Flex py="3" justify="space-evenly">
+      <Flex wrap="wrap" py="3" justify="space-evenly">
         <IconButton
+          d={{ base: "none", lg: "block" }}
           alignSelf="center"
           icon={language === "ar" ? <ArrowRightIcon /> : <ArrowLeftIcon />}
           mr="3"
@@ -127,8 +131,9 @@ export default function Home() {
               bg="whiteAlpha.300"
               boxShadow="lg"
               // overflow="hidden"
-              w="15rem"
+              w={{ base: "10rem", lg: "15rem" }}
               minH="100%"
+              my={{ base: "3", lg: "0" }}
               position="relative"
             >
               {" "}
@@ -140,15 +145,15 @@ export default function Home() {
                 transition="ease-in-out 0.1s"
               >
                 <Image
-                  objectFit="fill"
-                  boxSize="15rem"
+                  objectFit="cover"
+                  boxSize={{ base: "10rem", lg: "15rem" }}
                   fallback={<Skeleton boxSize="15rem"></Skeleton>}
                   src={`${imageUrl}/${movie.poster_path}`}
                 />{" "}
                 <Text
                   textAlign="center"
                   fontWeight="bold"
-                  fontSize="lg"
+                  fontSize={{ base: "sm", lg: "lg" }}
                   as="h2"
                 >
                   {" "}
@@ -177,6 +182,7 @@ export default function Home() {
             </Flex>
           ))}
         <IconButton
+          d={{ base: "none", lg: "block" }}
           alignSelf="center"
           icon={language === "ar" ? <ArrowLeftIcon /> : <ArrowRightIcon />}
           onClick={() => {
@@ -201,8 +207,9 @@ export default function Home() {
       >
         {t("trending")}
       </Text>
-      <Flex py="3" justify="space-evenly">
+      <Flex wrap="wrap" py="3" justify="space-evenly">
         <IconButton
+          d={{ base: "none", lg: "block" }}
           alignSelf="center"
           icon={language === "ar" ? <ArrowRightIcon /> : <ArrowLeftIcon />}
           mr="3"
@@ -226,8 +233,9 @@ export default function Home() {
               bg="whiteAlpha.300"
               boxShadow="lg"
               // overflow="hidden"
-              w="15rem"
+              w={{ base: "10rem", lg: "15rem" }}
               minH="100%"
+              my={{ base: "3", lg: "0" }}
               position="relative"
             >
               <LinkBox
@@ -239,9 +247,13 @@ export default function Home() {
               >
                 <Image
                   objectFit="fill"
-                  boxSize="15rem"
+                  boxSize={{ base: "10rem", lg: "15rem" }}
                   src={`${imageUrl}/${movie.poster_path}`}
-                  fallback={<Skeleton boxSize="15rem"></Skeleton>}
+                  fallback={
+                    <Skeleton
+                      boxSize={{ base: "10rem", lg: "15rem" }}
+                    ></Skeleton>
+                  }
                 />{" "}
                 <Text
                   textAlign="center"
@@ -273,6 +285,7 @@ export default function Home() {
             </Flex>
           ))}
         <IconButton
+          d={{ base: "none", lg: "block" }}
           alignSelf="center"
           icon={language === "ar" ? <ArrowLeftIcon /> : <ArrowRightIcon />}
           onClick={() => {

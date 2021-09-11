@@ -42,6 +42,9 @@ export default function Movies() {
 
   const dispatch = useDispatch();
   // eslint-disable-next-line
+  const changeMoviesLanguage = useSelector(
+    (state) => state.translation.changeMoviesLanguage
+  );
 
   useBottomScrollListener(() => setBottom(true));
 
@@ -54,6 +57,7 @@ export default function Movies() {
         setBottom(false);
       }, 2000);
     }
+
     return () => {
       changePage && clearTimeout(changePage);
       time && clearTimeout(time);
@@ -61,11 +65,14 @@ export default function Movies() {
   }, [bottom]);
 
   useEffect(() => {
-    dispatch(moviesByGenre({ genreId, language }));
+    dispatch(moviesByGenre({ genreId, language, changeMoviesLanguage }));
     setPage(1);
   }, [genreId, language]);
   useEffect(() => {
-    if (page > 1) dispatch(loadMoviesPages({ genreId, page: page, language }));
+    if (page > 1)
+      dispatch(
+        loadMoviesPages({ genreId, page: page, language, changeMoviesLanguage })
+      );
   }, [page, language]);
 
   // get genre names instead of id's

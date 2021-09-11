@@ -39,10 +39,14 @@ export default function SingleMovie() {
   const [movieNum, setMovieNum] = useState({ first: 0, second: 5 });
   const { movieId } = useParams();
   const dispatch = useDispatch();
+  const changeMoviesLanguage = useSelector(
+    (state) => state.translation.changeMoviesLanguage
+  );
   const movie = useSelector((state) => state.movies.movieDetails.list);
   const similarMovs = useSelector(
     (state) => state.moviesFilter.similarMovies.list
   );
+
   const similarMovsStatus = useSelector(
     (state) => state.moviesFilter.similarMovies.status
   );
@@ -53,7 +57,7 @@ export default function SingleMovie() {
   const actors = useSelector((state) => state.movies.movieActors.list);
   const { t } = useTranslation();
   useEffect(() => {
-    dispatch(similarMovies({ movieId, language }));
+    dispatch(similarMovies({ movieId, language, changeMoviesLanguage }));
     dispatch(movieActors({ movieId, language }));
     dispatch(movieDetails({ movieId, language }));
     dispatch(movieInEnglish({ movieId }));
@@ -77,12 +81,12 @@ export default function SingleMovie() {
       </Stack>
     );
   return (
-    <Box p="6" bg="black" minH="100vh">
+    <Box overflow="hidden" maxW="100vw" p="6" bg="black" minH="100vh">
       {movieStatus === "success" && actorsStatus === "success" && (
-        <Flex direction={["column,row,row,row"]}>
+        <Flex direction={{ lg: "row", md: "row", base: "column" }}>
           <Image
             borderRadius="10px"
-            h="lg"
+            h={{ lg: "lg", base: "sm" }}
             fallback={<Skeleton boxSize="lg"></Skeleton>}
             src={`${imageUrl}/${movie.poster_path}`}
           />
@@ -93,12 +97,12 @@ export default function SingleMovie() {
             p="5"
             direction="column"
             borderRadius="10px"
-            ml="5"
-            w="50%"
-            h="lg"
+            ml={{ lg: "5", base: "0" }}
+            w={{ lg: "50%", base: "100%" }}
+            h={{ lg: "lg", base: "auto" }}
             boxShadow="lg"
             position="relative"
-            mr="2"
+            mr={{ lg: "5", base: "0" }}
           >
             <Bookmark movie={movie} size={39} top="0" />
             <Stack borderBottom="#dc6208 solid 0.2rem">
@@ -110,7 +114,7 @@ export default function SingleMovie() {
               >
                 {movie.original_title}
               </Text>
-              <Flex justify="space-between">
+              <Flex wrap="wrap" justify="space-between">
                 <HStack spacing="2">
                   {movie.genres.slice(0, 3).map((genre) => (
                     <Text key={genre.id} fontSize="lg" color="gray.200">
@@ -163,9 +167,10 @@ export default function SingleMovie() {
           {actorsStatus === "success" && (
             <Image
               borderRadius="10px"
-              ml="5"
+              ml={{ lg: "5", base: "0" }}
               fallback={<Skeleton boxSize="lg"></Skeleton>}
-              h="lg"
+              h={{ lg: "lg", base: "sm" }}
+              d={{ lg: "block", base: "none" }}
               src={`${imageUrl}/${actors.cast[0]?.profile_path}`}
             />
           )}
@@ -183,10 +188,11 @@ export default function SingleMovie() {
         {t("actors")}
       </Text>
       {actors.cast && (
-        <Flex mt="5" justify="space-evenly" bg="black">
+        <Flex wrap="wrap" mt="5" justify="space-evenly" bg="black">
           <IconButton
             alignSelf="center"
             mr="3"
+            d={{ base: "none", lg: "block", md: "block" }}
             icon={language === "ar" ? <ArrowRightIcon /> : <ArrowLeftIcon />}
             onClick={() => {
               if (actorNum.first !== 0)
@@ -207,25 +213,39 @@ export default function SingleMovie() {
                 _hover={{ transform: "scale(1.1)" }}
                 transition="ease-in-out 0.1s"
               >
-                <Box color="white" bg="whiteAlpha.300" mr="3" key={actor.id}>
+                <Flex
+                  my={{ base: "3", lg: "0" }}
+                  color="white"
+                  bg="whiteAlpha.300"
+                  mr="3"
+                  direction="column"
+                  key={actor.id}
+                  w={{ base: "10rem", lg: "15rem" }}
+                >
                   {" "}
                   <Image
-                    boxSize="15rem"
+                    objectFit="cover"
+                    boxSize={{ base: "10rem", lg: "15rem" }}
                     src={`${imageUrl}/${actor.profile_path}`}
                     borderRadius="5px"
-                    fallback={<Skeleton boxSize="15rem"></Skeleton>}
+                    fallback={
+                      <Skeleton
+                        boxSize={{ base: "10rem", lg: "15rem" }}
+                      ></Skeleton>
+                    }
                   />{" "}
                   <Text fontSize="lg" textAlign="center" p="5">
                     {" "}
                     {actor.name}{" "}
                   </Text>
-                </Box>
+                </Flex>
               </Link>
             );
           })}{" "}
           <IconButton
             alignSelf="center"
             icon={language === "ar" ? <ArrowLeftIcon /> : <ArrowRightIcon />}
+            d={{ base: "none", lg: "block", md: "block" }}
             onClick={() => {
               if (actors.cast.length >= actorNum.second)
                 setActorNum((prevNum) => {
@@ -249,8 +269,9 @@ export default function SingleMovie() {
         {t("similarMovies")}
       </Text>
 
-      <Flex mt="5" justify="space-evenly" bg="black">
+      <Flex wrap="wrap" mt="5" justify="space-evenly" bg="black">
         <IconButton
+          d={{ base: "none", lg: "block" }}
           alignSelf="center"
           icon={language === "ar" ? <ArrowRightIcon /> : <ArrowLeftIcon />}
           mr="3"
@@ -274,32 +295,39 @@ export default function SingleMovie() {
                 _hover={{ transform: "scale(1.1)" }}
                 transition="ease-in-out 0.1s"
               >
-                <Box
-                  textAlign="center"
-                  minH="100%"
-                  maxW="15rem"
+                <Flex
+                  my={{ base: "3", lg: "0" }}
                   color="white"
                   bg="whiteAlpha.300"
                   mr="3"
+                  direction="column"
+                  key={movie.id}
+                  w={{ base: "10rem", lg: "15rem" }}
                 >
                   {" "}
                   <Image
-                    boxSize="15rem"
-                    src={`${imageUrl}/${movie.poster_path}`}
+                    objectFit="cover"
+                    boxSize={{ base: "10rem", lg: "15rem" }}
                     borderRadius="5px"
-                    fallback={<Skeleton boxSize="15rem"></Skeleton>}
+                    src={`${imageUrl}/${movie.poster_path}`}
+                    fallback={
+                      <Skeleton
+                        boxSize={{ base: "10rem", lg: "15rem" }}
+                      ></Skeleton>
+                    }
                   />{" "}
                   <Text fontSize="lg" textAlign="center" p="5">
                     {" "}
                     {movie.title}{" "}
                   </Text>
-                </Box>
+                </Flex>
               </Link>
             );
           })}{" "}
         <IconButton
           alignSelf="center"
           icon={language === "ar" ? <ArrowLeftIcon /> : <ArrowRightIcon />}
+          d={{ base: "none", lg: "block", md: "block" }}
           onClick={() => {
             if (movieNum.second < 20)
               return setMovieNum((prevNum) => {

@@ -10,6 +10,7 @@ import { Route, Switch } from "react-router";
 import ScrollToTop from "./Utilities/ScrollToTop";
 import { useSelector } from "react-redux";
 import { Spinner, Stack } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 
 function App() {
   const MoviesContainer = React.lazy(() =>
@@ -28,7 +29,7 @@ function App() {
         </Stack>
       }
     >
-      <div>
+      <Box maxW="100vw" overflow="hidden">
         <ScrollToTop />
         <NavBarContainer />
         {/* <FooterContainer /> */}
@@ -59,7 +60,7 @@ function App() {
             <HomeContainer />
           </Route>
         </Switch>
-      </div>
+      </Box>
     </Suspense>
   );
 }
