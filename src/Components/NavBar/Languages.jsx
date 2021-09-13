@@ -61,7 +61,7 @@ function Languages() {
         >
           <AlertDialogOverlay />
           <AlertDialogContent>
-            <AlertDialogHeader>
+            <AlertDialogHeader px="10">
               {language === "ar" ? "تغيير الأفلام؟" : "Change Movies?"}
             </AlertDialogHeader>
             <AlertDialogCloseButton />
@@ -80,6 +80,7 @@ function Languages() {
                 {language === "ar" ? "كلا" : "No"}
               </Button>
               <Button
+                mx="3"
                 onClick={() => {
                   setShowModal(false);
                   dispatch(setChangeMoviesLanguage(true));

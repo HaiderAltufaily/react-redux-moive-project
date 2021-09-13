@@ -145,7 +145,7 @@ export default function Home() {
                 transition="ease-in-out 0.1s"
               >
                 <Image
-                  objectFit="cover"
+                  objectFit="fill"
                   boxSize={{ base: "10rem", lg: "15rem" }}
                   fallback={<Skeleton boxSize="15rem"></Skeleton>}
                   src={`${imageUrl}/${movie.poster_path}`}

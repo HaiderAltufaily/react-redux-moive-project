@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 
 import BookmarkContainer from "./Containers/BookmarkContainer/BookmarkContainer";
 import NavBarContainer from "./Containers/NavBarContainer/NavBarContainer";
@@ -8,11 +8,20 @@ import SingleActorContainer from "./Containers/SingleActorContainer/SingleActorC
 import SingleMovieContainer from "./Containers/SingleMovieContainer/SingleMovieContainer";
 import { Route, Switch } from "react-router";
 import ScrollToTop from "./Utilities/ScrollToTop";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Spinner, Stack } from "@chakra-ui/react";
 import { Box } from "@chakra-ui/react";
+import { auth } from "./Firebase/Firebase";
+import { loginHandler } from "./Redux/Slices/authSlice";
 
 function App() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const unsub = auth.onAuthStateChanged((user) => {
+      if (user) user.getIdToken().then((res) => dispatch(loginHandler(res)));
+    });
+    return unsub;
+  }, []);
   const MoviesContainer = React.lazy(() =>
     import("./Containers/MoviesContainer/MoviesContainer")
   );
