@@ -4,22 +4,27 @@ import axios from "axios";
 export const moviesByGenre = createAsyncThunk(
   "filter/moviesByGenre",
   // &with_original_language=${language}
-  async ({ genreId, language }) => {
+  async ({ genreId, language, changeMoviesLanguage }) => {
     return axios
       .get(
-        `https://api.themoviedb.org/3/discover/movie?api_key=e8fe6c13def75cda44726ea251c4fb8c&5D&with_genres=${genreId}&language=${language}`
+        `https://api.themoviedb.org/3/discover/movie?api_key=e8fe6c13def75cda44726ea251c4fb8c&5D&with_genres=${genreId}&language=${language}${
+          changeMoviesLanguage && `&with_original_language=${language}`
+        }`
       )
       .then((response) => {
         return response.data;
       });
   }
 );
+
 export const loadMoviesPages = createAsyncThunk(
   "filter/loadMoviesPages",
-  async ({ genreId, page = 1, language }) => {
+  async ({ genreId, page = 1, language, changeMoviesLanguage }) => {
     return axios
       .get(
-        `https://api.themoviedb.org/3/discover/movie?api_key=e8fe6c13def75cda44726ea251c4fb8c&5D&with_genres=${genreId}&page=${page}&language=${language}`
+        `https://api.themoviedb.org/3/discover/movie?api_key=e8fe6c13def75cda44726ea251c4fb8c&5D&with_genres=${genreId}&page=${page}&language=${language}${
+          changeMoviesLanguage && `&with_original_language=${language}`
+        }`
       )
       .then((response) => {
         return response.data;
@@ -40,10 +45,12 @@ export const allGenres = createAsyncThunk(
 );
 export const similarMovies = createAsyncThunk(
   "filter/similarMovies",
-  async ({ movieId, language }) => {
+  async ({ movieId, language, changeMoviesLanguage }) => {
     return axios
       .get(
-        ` https://api.themoviedb.org/3/movie/${movieId}/similar?api_key=e8fe6c13def75cda44726ea251c4fb8c&5D&language=${language}&page=1`
+        ` https://api.themoviedb.org/3/movie/${movieId}/similar?api_key=e8fe6c13def75cda44726ea251c4fb8c&5D&language=${language}&page=1${
+          changeMoviesLanguage && `&with_original_language=${language}`
+        }`
       )
       .then((response) => {
         return response.data;

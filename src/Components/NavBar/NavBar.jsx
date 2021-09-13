@@ -37,14 +37,24 @@ export default function NavBar() {
   }, [language]);
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   return (
-    <Box
+    <Flex
+      overflow="hidden"
       borderBottom="#dc6208 solid 0.2rem"
       px="10"
-      h="4rem"
+      minH="4rem"
+      maxW="100vw"
       bg="blackAlpha.800"
       color="white"
+      w="100vw"
+      align="center"
     >
-      <Flex h="100%" align="center" justify="space-between">
+      <Flex
+        h={{ lg: "100%", base: "20rem" }}
+        align="center"
+        direction={{ lg: "row", md: "row", base: "column" }}
+        justify="space-between"
+        w="100%"
+      >
         <HStack spacing="10">
           <Link mr="10" as={ReachLink} to="/">
             <Text
@@ -60,7 +70,14 @@ export default function NavBar() {
           <Search />
         </HStack>
 
-        <HStack fontSize="lg" spacing="5">
+        <Flex
+          direction={{ base: "column", lg: "row" }}
+          w={{ base: "100%", lg: "40%" }}
+          align="center"
+          justifyContent={{ base: "space-around", lg: "space-around" }}
+          fontSize={{ base: "xl", lg: "lg" }}
+          spacing={{ base: "10", lg: "5" }}
+        >
           <Link borderRadius="30px" to="/" as={ReachLink}>
             {t("home")}
           </Link>
@@ -100,7 +117,7 @@ export default function NavBar() {
           ) : (
             <AlertModal />
           )}
-        </HStack>
+        </Flex>
 
         {isLoggedIn && (
           <HStack>
@@ -115,6 +132,6 @@ export default function NavBar() {
           <Languages />
         </Box>
       </Flex>
-    </Box>
+    </Flex>
   );
 }

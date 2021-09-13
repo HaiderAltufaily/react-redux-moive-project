@@ -9,6 +9,7 @@ import { resetBookmarks } from "../../Redux/Slices/bookmarksSlice";
 import { useTranslation } from "react-i18next";
 import { BiLogOut } from "react-icons/bi";
 import Cookies from "js-cookie";
+import { auth } from "../../Firebase/Firebase";
 
 function SignIn() {
   const language = Cookies.get("i18next");
@@ -19,6 +20,7 @@ function SignIn() {
   function handleSignOut() {
     dispatch(logoutHandler());
     dispatch(resetBookmarks());
+    auth.signOut();
   }
   return !isLoggedIn ? (
     <Button

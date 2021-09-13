@@ -3,10 +3,12 @@ import axios from "axios";
 
 export const getTrendingMovies = createAsyncThunk(
   "movies/trendingMovies",
-  async (language) => {
+  async ({ language, changeMoviesLanguage }) => {
     return axios
       .get(
-        `https://api.themoviedb.org/3/trending/movie/day?api_key=e8fe6c13def75cda44726ea251c4fb8c&language=${language}`
+        `https://api.themoviedb.org/3/trending/movie/day?api_key=e8fe6c13def75cda44726ea251c4fb8c&language=${language}${
+          changeMoviesLanguage && `&with_original_language=${language}`
+        }`
       )
       .then((response) => {
         return response.data;
@@ -15,10 +17,12 @@ export const getTrendingMovies = createAsyncThunk(
 );
 export const getPopularMovies = createAsyncThunk(
   "movies/popularMovies",
-  async (language) => {
+  async ({ language, changeMoviesLanguage }) => {
     return axios
       .get(
-        ` https://api.themoviedb.org/3/movie/popular?api_key=e8fe6c13def75cda44726ea251c4fb8c&language=${language}`
+        ` https://api.themoviedb.org/3/movie/popular?api_key=e8fe6c13def75cda44726ea251c4fb8c&language=${language}${
+          changeMoviesLanguage && `&with_original_language=${language}`
+        }`
       )
       .then((response) => {
         return response.data;
@@ -42,7 +46,7 @@ export const movieDetails = createAsyncThunk(
   async ({ movieId, language }) => {
     return axios
       .get(
-        `http://api.themoviedb.org/3/movie/${movieId}?api_key=e8fe6c13def75cda44726ea251c4fb8c&append_to_response=videos&language=${language}`
+        `https://api.themoviedb.org/3/movie/${movieId}?api_key=e8fe6c13def75cda44726ea251c4fb8c&append_to_response=videos&language=${language}`
       )
       .then((response) => {
         return response.data;
@@ -54,7 +58,7 @@ export const movieInEnglish = createAsyncThunk(
   async ({ movieId }) => {
     return axios
       .get(
-        `http://api.themoviedb.org/3/movie/${movieId}?api_key=e8fe6c13def75cda44726ea251c4fb8c&append_to_response=videos&language=en`
+        `https://api.themoviedb.org/3/movie/${movieId}?api_key=e8fe6c13def75cda44726ea251c4fb8c&append_to_response=videos&language=en`
       )
       .then((response) => {
         return response.data;
